@@ -70,8 +70,8 @@ QEMU = $(shell if which qemu > /dev/null; \
 	echo "*** or have you tried setting the QEMU variable in Makefile?" 1>&2; \
 	echo "***" 1>&2; exit 1)
 endif
-
-CC = $(TOOLPREFIX)gcc
+# CC = $(TOOLPREFIX)gcc
+CC = gcc-11
 AS = $(TOOLPREFIX)gas
 LD = $(TOOLPREFIX)ld
 OBJCOPY = $(TOOLPREFIX)objcopy
