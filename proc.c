@@ -533,3 +533,67 @@ procdump(void)
     cprintf("\n");
   }
 }
+
+int
+getnice(int pid)
+{
+  struct proc *p;
+  acquire(&ptable.lock);
+
+  for (p = ptable.proc; p < &ptable.proc[NPROC]; p++) {
+    if(p->pid == pid){
+      release(&ptable.lock);
+      return p->nice;
+    }
+  }
+  release(&ptable.lock);
+  return -1;
+}
+
+int
+setnice(int pid, int value)
+{
+  struct proc *p;
+  acquire(&ptable.lock);
+
+  for (p = ptable.proc; p < &ptable.proc[NPROC]; p++) {
+    if(p->pid == pid){
+      p->nice = value;
+      release(&ptable.lock);
+      return 0;
+    }
+  }
+  release(&ptable.lock);
+  return -1;
+}
+
+const char* procstateNames[] = {"UNUSED", "EMBRYO", "SLEEPING", "RUNNABLE", "RUNNING", "ZOMBIE"};
+
+void
+ps(int pid)
+{
+  struct proc *p;
+  acquire(&ptable.lock);
+
+  // check if given pid is 0
+  if (pid == 0) {
+    cprintf("name\tpid\tstate\tpriority\n");
+    for (p = ptable.proc; p < &ptable.proc[NPROC]; p++) {
+      cprintf("%s\t%d\t%s\t%d\n", p->name, p->pid, procstateNames[p->state], p->nice);
+    }
+    release(&ptable.lock);
+    return;
+  }
+
+  for (p = ptable.proc; p < &ptable.proc[NPROC]; p++) {
+    if (p->pid == pid){
+      cprintf("name\tpid\tstate\tpriority\n");
+      cprintf("%s\t%d\t%s\t%d\n", p->name, p->pid, procstateNames[p->state], p->nice);
+      release(&ptable.lock);
+      return;
+    }
+  }
+
+  release(&ptable.lock);
+  return;
+}
