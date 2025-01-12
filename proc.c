@@ -579,7 +579,9 @@ ps(int pid)
   if (pid == 0) {
     cprintf("name\tpid\tstate\tpriority\n");
     for (p = ptable.proc; p < &ptable.proc[NPROC]; p++) {
-      cprintf("%s\t%d\t%s\t%d\n", p->name, p->pid, procstateNames[p->state], p->nice);
+      if(p->state != UNUSED){
+        cprintf("%s\t%d\t%s\t%d\n", p->name, p->pid, procstateNames[p->state], p->nice);
+      }
     }
     release(&ptable.lock);
     return;
@@ -587,8 +589,10 @@ ps(int pid)
 
   for (p = ptable.proc; p < &ptable.proc[NPROC]; p++) {
     if (p->pid == pid){
-      cprintf("name\tpid\tstate\tpriority\n");
-      cprintf("%s\t%d\t%s\t%d\n", p->name, p->pid, procstateNames[p->state], p->nice);
+      if(p->state != UNUSED){
+        cprintf("name\tpid\tstate\tpriority\n");
+        cprintf("%s\t%d\t%s\t%d\n", p->name, p->pid, procstateNames[p->state], p->nice);
+      }
       release(&ptable.lock);
       return;
     }
